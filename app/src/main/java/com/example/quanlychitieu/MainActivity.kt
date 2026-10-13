@@ -16,11 +16,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnThemKhoanChi_346: Button
     private lateinit var btnXemChiTiet_346: Button
 
+    // Lưu khoản chi đã thêm trong bộ nhớ
+    private var khoanChi_346: KhoanChi? = null
+
     override fun onCreate(trangThai_346: Bundle?) {
         super.onCreate(trangThai_346)
         setContentView(R.layout.activity_main)
 
-        // Tiêu đề thanh ActionBar
         supportActionBar?.title =
             "Nguyễn Hữu Tú - 2415053122346 - Quản lý chi tiêu cá nhân"
 
@@ -32,12 +34,36 @@ class MainActivity : AppCompatActivity() {
         btnThemKhoanChi_346 = findViewById(R.id.btnThemKhoanChi_346)
         btnXemChiTiet_346 = findViewById(R.id.btnXemChiTiet_346)
 
+        // Bước 5.3: Điền dữ liệu mẫu khi mở màn hình lần đầu
+        if (trangThai_346 == null) {
+            edtTenKhoanChi_346.setText("In tài liệu Kotlin của Tú")
+            edtSoTien_346.setText("27000")
+            edtGhiChu_346.setText(
+                "In 18 trang bài thực hành buổi sáng"
+            )
+        }
+
         // Xử lý nút Thêm khoản chi
         btnThemKhoanChi_346.setOnClickListener {
             if (kiemTraDuLieu_346()) {
+                khoanChi_346 = KhoanChi(
+                    maKhoanChi_346 = "KC346_01",
+
+                    tenKhoanChi_346 =
+                        edtTenKhoanChi_346.text.toString().trim(),
+
+                    soTien_346 =
+                        edtSoTien_346.text.toString().trim().toDouble(),
+
+                    ghiChu_346 =
+                        edtGhiChu_346.text.toString().trim(),
+
+                    daThanhToan_346 = false
+                )
+
                 Toast.makeText(
                     this,
-                    "Thêm khoản chi thành công",
+                    "Đã thêm khoản chi",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -45,34 +71,31 @@ class MainActivity : AppCompatActivity() {
 
         // Xử lý nút Xem chi tiết khoản chi
         btnXemChiTiet_346.setOnClickListener {
-            if (kiemTraDuLieu_346()) {
-                val tenKhoanChi_346 =
-                    edtTenKhoanChi_346.text.toString().trim()
+            val khoanChiHienTai_346 = khoanChi_346
 
-                val soTien_346 =
-                    edtSoTien_346.text.toString().trim().toDouble()
-
-                val ghiChu_346 =
-                    edtGhiChu_346.text.toString().trim()
-
-                // Tạo Intent mở màn hình chi tiết
+            if (khoanChiHienTai_346 == null) {
+                Toast.makeText(
+                    this,
+                    "Bạn cần thêm khoản chi trước",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
                 val chuyenManHinh_346 =
                     Intent(this, ChiTietChiTieuActivity::class.java)
 
-                // Gửi dữ liệu sang màn hình chi tiết
                 chuyenManHinh_346.putExtra(
                     "tenKhoanChi_346",
-                    tenKhoanChi_346
+                    khoanChiHienTai_346.tenKhoanChi_346
                 )
 
                 chuyenManHinh_346.putExtra(
                     "soTien_346",
-                    soTien_346
+                    khoanChiHienTai_346.soTien_346
                 )
 
                 chuyenManHinh_346.putExtra(
                     "ghiChu_346",
-                    ghiChu_346
+                    khoanChiHienTai_346.ghiChu_346
                 )
 
                 startActivity(chuyenManHinh_346)
@@ -80,13 +103,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Kiểm tra dữ liệu trước khi xử lý
+    // Kiểm tra dữ liệu nhập
     private fun kiemTraDuLieu_346(): Boolean {
         val tenKhoanChi_346 =
             edtTenKhoanChi_346.text.toString().trim()
 
         val soTien_346 =
             edtSoTien_346.text.toString().trim().toDoubleOrNull()
+
+        // Xóa thông báo lỗi cũ
+        edtTenKhoanChi_346.error = null
+        edtSoTien_346.error = null
 
         if (tenKhoanChi_346.isBlank()) {
             edtTenKhoanChi_346.error =

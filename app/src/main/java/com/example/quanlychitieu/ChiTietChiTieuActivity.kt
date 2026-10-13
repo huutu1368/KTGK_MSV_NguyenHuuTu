@@ -12,8 +12,12 @@ import androidx.appcompat.app.AppCompatActivity
 class ChiTietChiTieuActivity : AppCompatActivity() {
 
     private lateinit var txtThongTin_346: TextView
+    private lateinit var btnChinhSua_346: Button
+    private lateinit var btnQuayLai_346: Button
+
     private lateinit var khoanChi_346: KhoanChi
 
+    // Nhận kết quả từ màn hình chỉnh sửa
     private val moChinhSua_346 = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { ketQua_346 ->
@@ -21,10 +25,12 @@ class ChiTietChiTieuActivity : AppCompatActivity() {
         if (ketQua_346.resultCode == Activity.RESULT_OK) {
             val duLieu_346 = ketQua_346.data
 
+            // Tạo bản mới, giữ nguyên mã và trạng thái thanh toán
             val khoanChiMoi_346 = khoanChi_346.copy(
                 tenKhoanChi_346 =
                     duLieu_346?.getStringExtra("tenKhoanChi_346")
-                        .orEmpty().trim(),
+                        .orEmpty()
+                        .trim(),
 
                 soTien_346 =
                     duLieu_346?.getDoubleExtra("soTien_346", 0.0)
@@ -35,11 +41,18 @@ class ChiTietChiTieuActivity : AppCompatActivity() {
                         .orEmpty()
             )
 
+            // Chỉ cập nhật nếu dữ liệu hợp lệ
             if (khoanChiMoi_346.tenKhoanChi_346.isNotBlank() &&
                 khoanChiMoi_346.laSoTienHopLe_346()
             ) {
                 khoanChi_346 = khoanChiMoi_346
                 hienThiThongTin_346()
+
+                Toast.makeText(
+                    this,
+                    "Đã cập nhật khoản chi",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
                 Toast.makeText(
                     this,
@@ -48,6 +61,8 @@ class ChiTietChiTieuActivity : AppCompatActivity() {
                 ).show()
             }
         }
+
+        // Khi Hủy hoặc nhấn Back, giữ nguyên khoản chi.
     }
 
     override fun onCreate(trangThai_346: Bundle?) {
@@ -55,25 +70,59 @@ class ChiTietChiTieuActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chi_tiet_chi_tieu)
 
         supportActionBar?.title =
-            "Nguyễn Hữu Tú - MSSV_CUA_BAN - Quản lý chi tiêu cá nhân"
+            "Nguyễn Hữu Tú - 2415053122346 - Quản lý chi tiêu cá nhân"
 
+        // Ánh xạ giao diện
         txtThongTin_346 = findViewById(R.id.txtThongTin_346)
+        btnChinhSua_346 = findViewById(R.id.btnChinhSua_346)
+        btnQuayLai_346 = findViewById(R.id.btnQuayLai_346)
 
-        khoanChi_346 = KhoanChi(
-            maKhoanChi_346 = "KC346_01",
+        // Khôi phục dữ liệu khi Activity được tạo lại
+        khoanChi_346 = if (trangThai_346 != null) {
+            KhoanChi(
+                maKhoanChi_346 =
+                    trangThai_346.getString("maKhoanChi_346")
+                        .orEmpty(),
 
-            tenKhoanChi_346 =
-                intent.getStringExtra("tenKhoanChi_346").orEmpty().trim(),
+                tenKhoanChi_346 =
+                    trangThai_346.getString("tenKhoanChi_346")
+                        .orEmpty(),
 
-            soTien_346 =
-                intent.getDoubleExtra("soTien_346", 0.0),
+                soTien_346 =
+                    trangThai_346.getDouble("soTien_346", 0.0),
 
-            ghiChu_346 =
-                intent.getStringExtra("ghiChu_346").orEmpty(),
+                ghiChu_346 =
+                    trangThai_346.getString("ghiChu_346")
+                        .orEmpty(),
 
-            daThanhToan_346 = false
-        )
+                daThanhToan_346 =
+                    trangThai_346.getBoolean("daThanhToan_346", false)
+            )
+        } else {
+            // Lần mở đầu tiên: nhận dữ liệu từ MainActivity
+            KhoanChi(
+                maKhoanChi_346 =
+                    intent.getStringExtra("maKhoanChi_346")
+                        ?: "KC346_01",
 
+                tenKhoanChi_346 =
+                    intent.getStringExtra("tenKhoanChi_346")
+                        .orEmpty()
+                        .trim(),
+
+                soTien_346 =
+                    intent.getDoubleExtra("soTien_346", 0.0),
+
+                ghiChu_346 =
+                    intent.getStringExtra("ghiChu_346")
+                        .orEmpty(),
+
+                daThanhToan_346 =
+                    intent.getBooleanExtra("daThanhToan_346", false)
+            )
+        }
+
+        // Kiểm tra khoản chi trước khi hiển thị
         if (khoanChi_346.tenKhoanChi_346.isBlank() ||
             !khoanChi_346.laSoTienHopLe_346()
         ) {
@@ -89,9 +138,7 @@ class ChiTietChiTieuActivity : AppCompatActivity() {
 
         hienThiThongTin_346()
 
-        val btnChinhSua_346 =
-            findViewById<Button>(R.id.btnChinhSua_346)
-
+        // Bật và xử lý nút Chỉnh sửa
         btnChinhSua_346.isEnabled = true
 
         btnChinhSua_346.setOnClickListener {
@@ -116,12 +163,46 @@ class ChiTietChiTieuActivity : AppCompatActivity() {
             moChinhSua_346.launch(chuyenManHinh_346)
         }
 
-        findViewById<Button>(R.id.btnQuayLai_346).setOnClickListener {
+        // Quay lại màn hình chính
+        btnQuayLai_346.setOnClickListener {
             finish()
         }
     }
 
+    // Hiển thị thông tin và trạng thái thanh toán
     private fun hienThiThongTin_346() {
         txtThongTin_346.text = khoanChi_346.layThongTin_346()
+    }
+
+    // Lưu khoản chi hiện tại trước khi Activity được tạo lại
+    override fun onSaveInstanceState(trangThai_346: Bundle) {
+        if (::khoanChi_346.isInitialized) {
+            trangThai_346.putString(
+                "maKhoanChi_346",
+                khoanChi_346.maKhoanChi_346
+            )
+
+            trangThai_346.putString(
+                "tenKhoanChi_346",
+                khoanChi_346.tenKhoanChi_346
+            )
+
+            trangThai_346.putDouble(
+                "soTien_346",
+                khoanChi_346.soTien_346
+            )
+
+            trangThai_346.putString(
+                "ghiChu_346",
+                khoanChi_346.ghiChu_346
+            )
+
+            trangThai_346.putBoolean(
+                "daThanhToan_346",
+                khoanChi_346.daThanhToan_346
+            )
+        }
+
+        super.onSaveInstanceState(trangThai_346)
     }
 }

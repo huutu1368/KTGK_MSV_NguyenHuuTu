@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CHỈNH SỬA KHOẢN CHI"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tên khoản chi" />
+
+        <EditText
+            android:id="@+id/edtTenKhoanChi_346"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Số tiền"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/edtSoTien_346"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal|numberSigned"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ghi chú"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/edtGhiChu_346"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            android:gravity="top"
+            android:minHeight="48dp" />
+
+        <Button
+            android:id="@+id/btnLuu_346"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lưu"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnHuy_346"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hủy" />
+
+    </LinearLayout>
+</ScrollView>
